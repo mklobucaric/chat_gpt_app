@@ -69,7 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chat with GPT-3.5-Turbo-16k'),
+        title: const Text('Chat with GPT-3.5-Turbo-16k-0613'),
       ),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,

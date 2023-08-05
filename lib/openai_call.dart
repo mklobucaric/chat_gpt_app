@@ -13,7 +13,7 @@ Future<String> sendQuery(List<dynamic> messsages) async {
   };
 
   final body = jsonEncode({
-    'model': 'gpt-3.5-turbo-16k',
+    'model': 'gpt-3.5-turbo-16k-0613',
     'messages': messsages,
     // 'max_tokens': 1024,
     'temperature': 0.7,
