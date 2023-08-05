@@ -83,6 +83,16 @@ class _MyHomePageState extends State<MyHomePage> {
                   _query = value;
                 });
               },
+              onSubmitted: (value) {
+                if (value.isEmpty) {
+                  _queryController.clear();
+                  _queryController.text = '';
+                } else {
+                  _sendQuery();
+                  _queryController.clear();
+                  _queryController.text = '';
+                }
+              },
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 hintText: 'Enter your query',
@@ -115,6 +125,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                           child: SingleChildScrollView(
                             scrollDirection: Axis.vertical,
+                            // Text(_reply), shoud be able to copy text
+
                             child: Text(_reply),
                           ),
                         ),
