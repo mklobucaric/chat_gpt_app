@@ -76,26 +76,21 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextField(
-              controller: _queryController,
-              onChanged: (value) {
-                setState(() {
-                  _query = value;
-                });
-              },
-              onSubmitted: (value) {
-                if (value.isEmpty) {
-                  _queryController.clear();
-                  _queryController.text = '';
-                } else {
-                  _sendQuery();
-                  _queryController.clear();
-                  _queryController.text = '';
-                }
-              },
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Enter your query',
+            SingleChildScrollView(
+              child: TextField(
+                maxLines: 4, // Allow the text field to expand vertically
+                //maxLength: 1000,
+                controller: _queryController,
+                onChanged: (value) {
+                  setState(() {
+                    _query = value;
+                  });
+                },
+
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Enter your query',
+                ),
               ),
             ),
             const SizedBox(height: 16.0),
@@ -107,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       _queryController.clear();
                       _queryController.text = '';
                     },
-              child: Text('Send'),
+              child: const Text('Send'),
             ),
             const SizedBox(height: 16.0),
             _isLoading
