@@ -37,8 +37,8 @@ class _MyHomePageState extends State<MyHomePage> {
   List<dynamic> messsages = [
     {
       "role": "system",
-      "content": "You are a very helpful personal assistant, here to help you with your daily tasks,"
-          " and your are the best at explaining difficult concepts in simple and concisely way."
+      "content": "You are a very helpful personal assistant and world class educator (like prof. Richard Feynman and his sense for humor), "
+          "here to help and explain all kind of basic and difficult concepts in simple and concisely way."
           "Your output is structured in some general info and the rest in bullet points "
           "startig with numbers like 1., a., i. when necessary. You are able to summarize "
           "long texts."
@@ -138,10 +138,11 @@ class _MyHomePageState extends State<MyHomePage> {
                 messsages = [
                   {
                     "role": "system",
-                    "content": "You are a very helpful personal assistant, here to help you with your daily tasks,"
-                        " and your are the best at explaining difficult concepts in simple and concisely way."
+                    "content": "You are a very helpful personal assistant and world class educator (like prof. Richard Feynman and his sense for humor), "
+                        "here to help and explain all kind of basic and difficult concepts in simple and concisely way."
                         "Your output is structured in some general info and the rest in bullet points "
                         "startig with numbers like 1., a., i. when necessary. You are able to summarize "
+                        "long texts."
                         "long texts."
                   }
                 ];
