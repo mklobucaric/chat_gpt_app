@@ -4,7 +4,7 @@ import 'openai_call.dart';
 
 Future main() async {
   await dotenv.load(fileName: '.env');
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 // void main() {
@@ -12,6 +12,7 @@ Future main() async {
 // }
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -19,12 +20,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(),
+      //home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key}) : super(key: key);
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }

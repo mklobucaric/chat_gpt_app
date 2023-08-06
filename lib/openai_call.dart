@@ -5,8 +5,7 @@ import 'package:http/http.dart' as http;
 Future<String> sendQuery(List<dynamic> messsages) async {
   String? _apiKey = dotenv.env['OPENAI_API_KEY'];
 
-  final url = 'https://api.openai.com/v1/chat/completions';
-  print(url);
+  const url = 'https://api.openai.com/v1/chat/completions';
   final headers = {
     'Content-Type': 'application/json',
     'Authorization': 'Bearer $_apiKey'
