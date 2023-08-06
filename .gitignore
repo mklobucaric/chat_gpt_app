@@ -5,8 +5,17 @@
 .packages
 .idea
 build/
+android/build/
 ios/ 
 linux/
+.vscode/
+*.iml
+.metadata
+web/build/
+windows/Runner/Debug/
+windows/Runner/Release/
+
+
 
 # If you're building an application, you may want to check-in your pubspec.lock
 pubspec.lock
