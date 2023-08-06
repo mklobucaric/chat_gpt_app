@@ -14,7 +14,8 @@ linux/
 web/build/
 windows/Runner/Debug/
 windows/Runner/Release/
-
+windows/
+web/
 
 
 # If you're building an application, you may want to check-in your pubspec.lock
