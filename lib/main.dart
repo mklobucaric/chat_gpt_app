@@ -127,7 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             scrollDirection: Axis.vertical,
                             // Text(_reply), shoud be able to copy text
 
-                            child: Text(_reply),
+                            child: SelectableText(_reply),
                           ),
                         ),
                       )
@@ -146,7 +146,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   }
                 ];
               },
-              child: Text('New query'),
+              child: const Text('New query'),
             ),
           ],
         ),
