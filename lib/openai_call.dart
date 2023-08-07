@@ -2,27 +2,31 @@ import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
+// Sends the query to the OpenAI API and returns the reply.
 Future<String> sendQuery(List<dynamic> messsages) async {
-  String? apiKey = dotenv.env['OPENAI_API_KEY'];
+  String? apiKey = dotenv.env[
+      'OPENAI_API_KEY']; // Retrieves the OpenAI API key from the environment
 
-  const url = 'https://api.openai.com/v1/chat/completions';
+  const url =
+      'https://api.openai.com/v1/chat/completions'; // URL for the OpenAI API
   final headers = {
     'Content-Type': 'application/json',
-    'Authorization': 'Bearer $apiKey'
+    'Authorization':
+        'Bearer $apiKey' // Sets the authorization header with the API key
   };
 
   final body = jsonEncode({
-    'model': 'gpt-3.5-turbo-16k-0613',
-    'messages': messsages,
-    // 'max_tokens': 1024,
-    'temperature': 0.7,
-    'n': 1,
-    // 'stop': '\n'
+    'model': 'gpt-3.5-turbo-16k-0613', // Specifies the model to use
+    'messages': messsages, // Sets the conversation messages
+    'temperature': 0.7, // Controls the randomness of the generated response
+    'n': 1, // Specifies the number of responses to generate
   });
-  final response =
-      await http.post(Uri.parse(url), headers: headers, body: body);
-  final data = jsonDecode(response.body);
-  final choices = data['choices'];
-  final text = choices[0]['message']['content'];
-  return text;
+  final response = await http.post(Uri.parse(url),
+      headers: headers, body: body); // Sends a POST request to the OpenAI API
+  final data = jsonDecode(response.body); // Parses the response body as JSON
+  final choices =
+      data['choices']; // Retrieves the generated choices from the response
+  final text = choices[0]['message']
+      ['content']; // Retrieves the generated text from the first choice
+  return text; // Returns the generated text
 }

@@ -2,11 +2,14 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 import 'openai_call.dart';
 
+// The main function that serves as the entry point of the application.
 Future main() async {
-  await dotenv.load(fileName: '.env');
-  runApp(const MyApp());
+  await dotenv.load(
+      fileName: '.env'); // Loads environment variables from a .env file
+  runApp(const MyApp()); // Runs the app
 }
 
+// The root widget of the application.
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -15,53 +18,64 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Your App',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.blue, // Sets the primary color theme
       ),
-      home: const MyHomePage(),
+      home: const MyHomePage(), // Sets the home page
     );
   }
 }
 
+// The home page widget.
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
 
   @override
-  MyHomePageState createState() => MyHomePageState();
+  MyHomePageState createState() =>
+      MyHomePageState(); // Creates the state for the home page
 }
 
+// The state of the home page widget.
 class MyHomePageState extends State<MyHomePage> {
-  String _query = '';
-  String _reply = '';
-  bool _isLoading = false;
-  final TextEditingController _queryController = TextEditingController();
+  String _query = ''; // Stores the user's query
+  String _reply = ''; // Stores the AI assistant's response
+  bool _isLoading = false; // Indicates if a query is being sent
+  final TextEditingController _queryController =
+      TextEditingController(); // Controller for the query text field
   List<dynamic> messsages = [
     {
       "role": "system",
       "content": "You are a very helpful personal assistant and world class educator (like prof. Richard Feynman and his sense for humor), "
           "here to help and explain all kind of basic and difficult concepts in simple and concisely way."
           "Your output is structured in some general info and the rest in bullet points "
-          "startig with numbers like 1., a., i. when necessary. You are able to summarize "
+          "starting with numbers like 1., a., i. when necessary. You are able to summarize "
           "long texts."
     }
-  ];
+  ]; // Stores the conversation messages
 
   @override
   void dispose() {
-    _queryController.dispose();
+    _queryController.dispose(); // Disposes the query text field controller
     super.dispose();
   }
 
+  // Sends the query to the OpenAI API and updates the UI with the reply.
   Future<void> _sendQuery() async {
     setState(() {
-      _isLoading = true;
-      // messsages.add({"role": "user", "content": "$_query\n"});
-      messsages.add({"role": "user", "content": _query});
+      _isLoading = true; // Sets the loading state
+      messsages.add({
+        "role": "user",
+        "content": _query
+      }); // Adds the user's query to the conversation
     });
-    final reply = await sendQuery(messsages);
+    final reply = await sendQuery(
+        messsages); // Calls the sendQuery function from openai_call.dart
     setState(() {
-      _reply = reply;
-      messsages.add({"role": "assistant", "content": reply});
-      _isLoading = false;
+      _reply = reply; // Updates the AI assistant's response
+      messsages.add({
+        "role": "assistant",
+        "content": reply
+      }); // Adds the assistant's response to the conversation
+      _isLoading = false; // Resets the loading state
     });
   }
 
@@ -69,7 +83,8 @@ class MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chat with GPT-3.5-Turbo-16k-0613'),
+        title: const Text(
+            'Chat with GPT-3.5-Turbo-16k-0613'), // Sets the app bar title
       ),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
@@ -78,15 +93,15 @@ class MyHomePageState extends State<MyHomePage> {
           children: [
             SingleChildScrollView(
               child: TextField(
-                maxLines: 4, // Allow the text field to expand vertically
-                //maxLength: 1000,
-                controller: _queryController,
+                maxLines:
+                    4, // Sets the maximum number of lines for the query text field
+                controller:
+                    _queryController, // Binds the controller to the query text field
                 onChanged: (value) {
                   setState(() {
-                    _query = value;
+                    _query = value; // Updates the user's query
                   });
                 },
-
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: 'Enter your query',
@@ -98,9 +113,10 @@ class MyHomePageState extends State<MyHomePage> {
               onPressed: _isLoading
                   ? null
                   : () {
-                      _sendQuery();
-                      _queryController.clear();
-                      _queryController.text = '';
+                      _sendQuery(); // Sends the query when the button is pressed
+                      _queryController.clear(); // Clears the query text field
+                      _queryController.text =
+                          ''; // Resets the query text field value
                     },
               child: const Text('Send'),
             ),
@@ -120,7 +136,8 @@ class MyHomePageState extends State<MyHomePage> {
                           ),
                           child: SingleChildScrollView(
                             scrollDirection: Axis.vertical,
-                            child: SelectableText(_reply),
+                            child: SelectableText(
+                                _reply), // Displays the AI assistant's response
                           ),
                         ),
                       )
@@ -134,7 +151,7 @@ class MyHomePageState extends State<MyHomePage> {
                     "content": "You are a very helpful personal assistant and world class educator (like prof. Richard Feynman and his sense for humor), "
                         "here to help and explain all kind of basic and difficult concepts in simple and concisely way."
                         "Your output is structured in some general info and the rest in bullet points "
-                        "startig with numbers like 1., a., i. when necessary. You are able to summarize "
+                        "starting with numbers like 1., a., i. when necessary. You are able to summarize "
                         "long texts."
                         "long texts."
                   }
