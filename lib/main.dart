@@ -1,6 +1,7 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 import 'openai_call.dart';
+import 'package:file_picker/file_picker.dart';
 
 // The main function that serves as the entry point of the application.
 Future main() async {
@@ -67,8 +68,10 @@ class MyHomePageState extends State<MyHomePage> {
         "content": _query
       }); // Adds the user's query to the conversation
     });
+
     final reply = await sendQuery(
         messsages); // Calls the sendQuery function from openai_call.dart
+
     setState(() {
       _reply = reply; // Updates the AI assistant's response
       messsages.add({
@@ -76,6 +79,20 @@ class MyHomePageState extends State<MyHomePage> {
         "content": reply
       }); // Adds the assistant's response to the conversation
       _isLoading = false; // Resets the loading state
+      _queryController.clear();
+      _queryController.text = '';
+    });
+  }
+
+  Future<void> _recordAudio(String filePath) async {
+    setState(() {
+      _isLoading = true;
+    });
+    String transcribedText = await sendAudioFile(filePath);
+    setState(() {
+      _queryController.text = transcribedText;
+      _query = transcribedText;
+      _sendQuery();
     });
   }
 
@@ -109,16 +126,30 @@ class MyHomePageState extends State<MyHomePage> {
               ),
             ),
             const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: _isLoading
-                  ? null
-                  : () {
-                      _sendQuery(); // Sends the query when the button is pressed
-                      _queryController.clear(); // Clears the query text field
-                      _queryController.text =
-                          ''; // Resets the query text field value
-                    },
-              child: const Text('Send'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: _isLoading
+                      ? null
+                      : () {
+                          _sendQuery();
+                        },
+                  child: const Text('Send'),
+                ),
+                const SizedBox(width: 16), // Add some space between the buttons
+                ElevatedButton(
+                  onPressed: () async {
+                    // _recordAudio();
+                    FilePickerResult? result =
+                        await FilePicker.platform.pickFiles();
+                    if (result != null) {
+                      _recordAudio(result.files.first.path!);
+                    }
+                  },
+                  child: const Text('Voice prompt'),
+                ),
+              ],
             ),
             const SizedBox(height: 16.0),
             _isLoading

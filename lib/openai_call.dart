@@ -6,7 +6,6 @@ import 'package:http/http.dart' as http;
 Future<String> sendQuery(List<dynamic> messsages) async {
   String? apiKey = dotenv.env[
       'OPENAI_API_KEY']; // Retrieves the OpenAI API key from the environment
-
   const url =
       'https://api.openai.com/v1/chat/completions'; // URL for the OpenAI API
   final headers = {
@@ -29,4 +28,23 @@ Future<String> sendQuery(List<dynamic> messsages) async {
   final text = choices[0]['message']
       ['content']; // Retrieves the generated text from the first choice
   return text; // Returns the generated text
+}
+
+//Future<String> sendAudioFile(File audioFile) async {
+Future<String> sendAudioFile(String filePath) async {
+  String? _apiKey = dotenv.env['OPENAI_API_KEY'];
+  const url = 'https://api.openai.com/v1/audio/transcriptions';
+  final headers = {
+    'Authorization': 'Bearer $_apiKey',
+    'Content-Type': 'multipart/form-data'
+  };
+
+  final request = http.MultipartRequest('POST', Uri.parse(url));
+  request.headers.addAll(headers);
+  request.fields['model'] = 'whisper-1';
+  request.files.add(await http.MultipartFile.fromPath('file', filePath));
+  final response = await request.send();
+  final data = await response.stream.bytesToString();
+  final text = jsonDecode(data)['text'];
+  return text;
 }

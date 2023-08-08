@@ -39,6 +39,11 @@ dependencies:
   
   http: ^1.1.0
   flutter_dotenv: ^5.1.0
+  file_picker: ^5.3.3
+  flutter_sound: ^9.2.13
+  path_provider: ^2.1.0
+  
+
 
 dev_dependencies:
   flutter_test:
