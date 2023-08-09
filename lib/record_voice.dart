@@ -54,7 +54,6 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
     }
     await _recorder.openRecorder();
     _recorder.setSubscriptionDuration(const Duration(milliseconds: 100));
-    _recorder.setAutioFormat(AudioFormat.aac);
   }
 
   @override
