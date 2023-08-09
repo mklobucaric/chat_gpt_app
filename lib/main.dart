@@ -94,7 +94,7 @@ class MyHomePageState extends State<MyHomePage> {
     setState(() {
       _queryController.text = transcribedText;
       _query = transcribedText;
-      _sendQuery();
+      //_sendQuery();
     });
   }
 
@@ -104,7 +104,7 @@ class MyHomePageState extends State<MyHomePage> {
     setState(() {
       _voicePromptPath = result;
     });
-    _recordAudio(_voicePromptPath);
+    //   _recordAudio(_voicePromptPath);
   }
 
   @override
