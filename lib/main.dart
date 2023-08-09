@@ -2,6 +2,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 import 'openai_call.dart';
 import 'package:file_picker/file_picker.dart';
+import 'record_voice.dart';
 
 // The main function that serves as the entry point of the application.
 Future main() async {
@@ -96,6 +97,12 @@ class MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  // _voiceRecorerScreen() async {
+  //   final result = await Navigator.push(context,
+  //       MaterialPageRoute(builder: (context) => const VoiceRecorder()));
+  //   print(result);
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -140,12 +147,17 @@ class MyHomePageState extends State<MyHomePage> {
                 const SizedBox(width: 16), // Add some space between the buttons
                 ElevatedButton(
                   onPressed: () async {
-                    // _recordAudio();
-                    FilePickerResult? result =
-                        await FilePicker.platform.pickFiles();
-                    if (result != null) {
-                      _recordAudio(result.files.first.path!);
-                    }
+                    final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const VoiceRecorder()));
+                    print(result);
+
+                    // FilePickerResult? result =
+                    //     await FilePicker.platform.pickFiles();
+                    // if (result != null) {
+                    //   _recordAudio(result.files.first.path!);
+                    // }
                   },
                   child: const Text('Voice prompt'),
                 ),

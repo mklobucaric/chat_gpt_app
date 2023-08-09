@@ -1,33 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/flutter_sound.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'dart:io';
 
 class VoiceRecorder extends StatefulWidget {
+  const VoiceRecorder({Key? key}) : super(key: key);
+
   @override
   _VoiceRecorderState createState() => _VoiceRecorderState();
 }
 
 class _VoiceRecorderState extends State<VoiceRecorder> {
-  FlutterSoundRecorder? _recorder;
-  String? _voicePath;
+  final _recorder = FlutterSoundRecorder();
+  bool _isRecording = false;
+  String _voicePath = '';
 
   @override
   void initState() {
     super.initState();
-    _recorder = FlutterSoundRecorder();
-  }
-
-  Future<String> _getDownloadPath() async {
-    final directory = await getExternalStorageDirectory();
-    return directory!.path;
+    initVoiceRecorder();
   }
 
   Future<void> _startRecording() async {
     try {
-      await _recorder!.openAudioSession();
-      await _recorder!.startRecorder(
-        toFile: await _getDownloadPath() + '/voicePrompt.mp3',
-        codec: Codec.mp3,
+      await _recorder.startRecorder(
+        toFile: 'voicePrompt',
+        //codec: Codec.mp3,
       );
     } catch (e) {
       print('Failed to start recording: $e');
@@ -36,20 +34,26 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
 
   Future<void> _stopRecording() async {
     try {
-      await _recorder!.stopRecorder();
-      await _recorder!.closeAudioSession();
-      setState(() {
-        _voicePath = _recorder!.lastSavedFilePath;
-      });
+      final voicePath = await _recorder.stopRecorder();
+      final audioVoicePath = File(voicePath!);
+      _voicePath = audioVoicePath.path;
     } catch (e) {
       print('Failed to stop recording: $e');
     }
   }
 
+  Future initVoiceRecorder() async {
+    final status = await Permission.microphone.request();
+    if (status != PermissionStatus.granted) {
+      throw RecordingPermissionException('Microphone permission not granted');
+    }
+    await _recorder.openRecorder();
+    _recorder.setSubscriptionDuration(const Duration(milliseconds: 100));
+  }
+
   @override
   void dispose() {
-    _recorder!.closeAudioSession();
-    _recorder = null;
+    _recorder.closeRecorder();
     super.dispose();
   }
 
@@ -57,24 +61,38 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Voice Recorder'),
+        title: const Text('Voice Recorder'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: _startRecording,
-              child: Text('Start Recording'),
+          children: <Widget>[
+            StreamBuilder<RecordingDisposition>(
+              stream: _recorder.onProgress,
+              builder: (context, snapshot) {
+                final disposition = snapshot.data;
+                return Text(
+                    'Recording disposition: ${disposition?.toString() ?? 'Unkown'}');
+              },
             ),
+            Text('Voice Path: $_voicePath'),
+            const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _stopRecording,
-              child: Text('Stop Recording'),
-            ),
-            SizedBox(height: 20),
-            Text(
-              'Voice Path: $_voicePath',
-              style: TextStyle(fontSize: 16),
+              onPressed: () {
+                setState(() {
+                  _isRecording = !_isRecording;
+                });
+                if (_isRecording) {
+                  _startRecording();
+                } else {
+                  _stopRecording();
+                  Navigator.pop(context, _voicePath);
+                }
+              },
+              child: Icon(
+                _isRecording ? Icons.stop : Icons.mic,
+                size: 50,
+              ),
             ),
           ],
         ),
