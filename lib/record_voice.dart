@@ -24,12 +24,13 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
   Future<void> _startRecording() async {
     try {
       await _recorder.startRecorder(
-        toFile: 'voicePrompt',
-        //       codec: Codec.mp3,
+        toFile: 'voicePrompt.mp3',
+        codec: Codec.mp3,
       );
     } catch (e) {
       print('Failed to start recording: $e');
     }
+  }
   }
 
   Future<void> _stopRecording() async {
