@@ -16,7 +16,7 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
   bool _isRecording = false;
   final _voicePath = '';
   bool _playAudio = false;
-  String pathToAudio = '/sdcard/Download/voicePrompt.mp4';
+  String pathToAudio = 'sdcard/Download/voicePrompt.mp4';
 
   final recordingPlayer = AssetsAudioPlayer();
 
@@ -30,7 +30,7 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
     try {
       await _recorder.startRecorder(
           //    toFile: 'voicePrompt.mp4',
-          toFile: '/sdcard/Download/voicePrompt.mp4',
+          toFile: 'sdcard/Download/voicePrompt.mp4',
           //       codec: Codec.aacADTS,
           codec: Codec.aacMP4);
     } catch (e) {
