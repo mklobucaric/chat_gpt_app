@@ -104,7 +104,7 @@ class MyHomePageState extends State<MyHomePage> {
     setState(() {
       _voicePromptPath = result;
     });
-    //   _recordAudio(_voicePromptPath);
+    _recordAudio(_voicePromptPath);
   }
 
   @override

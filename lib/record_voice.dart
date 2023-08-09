@@ -14,7 +14,7 @@ class VoiceRecorder extends StatefulWidget {
 class _VoiceRecorderState extends State<VoiceRecorder> {
   final _recorder = FlutterSoundRecorder();
   bool _isRecording = false;
-  final _voicePath = '';
+  String _voicePath = '';
   bool _playAudio = false;
   String pathToAudio = 'sdcard/Download/voicePrompt.mp4';
 
@@ -43,9 +43,9 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
       //    final voicePath = await _recorder.stopRecorder();
       final voicePath = await _recorder.stopRecorder();
       final audioVoicePath = File(voicePath!);
-      // setState(() {
-      //   _voicePath = audioVoicePath.path;
-      // });
+      setState(() {
+        _voicePath = audioVoicePath.path;
+      });
       //     Navigator.pop(context, audioVoicePath.path);
     } catch (e) {
       print('Failed to stop recording: $e');
