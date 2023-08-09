@@ -97,11 +97,11 @@ class MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  // _voiceRecorerScreen() async {
-  //   final result = await Navigator.push(context,
-  //       MaterialPageRoute(builder: (context) => const VoiceRecorder()));
-  //   print(result);
-  // }
+  Future<void> _voiceRecorerScreen() async {
+    final result = await Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const VoiceRecorder()));
+    print(result);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -146,19 +146,7 @@ class MyHomePageState extends State<MyHomePage> {
                 ),
                 const SizedBox(width: 16), // Add some space between the buttons
                 ElevatedButton(
-                  onPressed: () async {
-                    final result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const VoiceRecorder()));
-                    print(result);
-
-                    // FilePickerResult? result =
-                    //     await FilePicker.platform.pickFiles();
-                    // if (result != null) {
-                    //   _recordAudio(result.files.first.path!);
-                    // }
-                  },
+                  onPressed: _voiceRecorerScreen,
                   child: const Text('Voice prompt'),
                 ),
               ],

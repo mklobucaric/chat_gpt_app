@@ -13,7 +13,7 @@ class VoiceRecorder extends StatefulWidget {
 class _VoiceRecorderState extends State<VoiceRecorder> {
   final _recorder = FlutterSoundRecorder();
   bool _isRecording = false;
-  String _voicePath = '';
+  final _voicePath = '';
 
   @override
   void initState() {
@@ -34,9 +34,12 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
 
   Future<void> _stopRecording() async {
     try {
+      //    final voicePath = await _recorder.stopRecorder();
       final voicePath = await _recorder.stopRecorder();
       final audioVoicePath = File(voicePath!);
-      _voicePath = audioVoicePath.path;
+      // setState(() {
+      //   _voicePath = audioVoicePath.path;
+      // });
     } catch (e) {
       print('Failed to stop recording: $e');
     }
