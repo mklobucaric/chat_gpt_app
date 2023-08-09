@@ -40,6 +40,7 @@ class MyHomePage extends StatefulWidget {
 class MyHomePageState extends State<MyHomePage> {
   String _query = ''; // Stores the user's query
   String _reply = ''; // Stores the AI assistant's response
+  String _voicePromptPath = ''; // Stores the path to the voice prompt
   bool _isLoading = false; // Indicates if a query is being sent
   final TextEditingController _queryController =
       TextEditingController(); // Controller for the query text field
@@ -100,7 +101,10 @@ class MyHomePageState extends State<MyHomePage> {
   Future<void> _voiceRecorerScreen() async {
     final result = await Navigator.push(context,
         MaterialPageRoute(builder: (context) => const VoiceRecorder()));
-    print(result);
+    setState(() {
+      _voicePromptPath = result;
+    });
+    _recordAudio(_voicePromptPath);
   }
 
   @override

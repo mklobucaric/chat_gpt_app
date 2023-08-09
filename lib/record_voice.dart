@@ -25,7 +25,7 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
     try {
       await _recorder.startRecorder(
         toFile: 'voicePrompt',
-        //codec: Codec.mp3,
+        //       codec: Codec.mp3,
       );
     } catch (e) {
       print('Failed to start recording: $e');
@@ -40,6 +40,7 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
       // setState(() {
       //   _voicePath = audioVoicePath.path;
       // });
+      Navigator.pop(context, audioVoicePath.path);
     } catch (e) {
       print('Failed to stop recording: $e');
     }
@@ -52,6 +53,7 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
     }
     await _recorder.openRecorder();
     _recorder.setSubscriptionDuration(const Duration(milliseconds: 100));
+    _recorder.setAutioFormat(AudioFormat.aac);
   }
 
   @override
@@ -89,7 +91,7 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
                   _startRecording();
                 } else {
                   _stopRecording();
-                  Navigator.pop(context, _voicePath);
+//                  Navigator.pop(context, _voicePath);
                 }
               },
               child: Icon(
