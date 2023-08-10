@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_sound/flutter_sound.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
 import 'package:assets_audio_player/assets_audio_player.dart';
@@ -13,7 +12,6 @@ class VoiceRecorder extends StatefulWidget {
 }
 
 class _VoiceRecorderState extends State<VoiceRecorder> {
-  // final _recorder = FlutterSoundRecorder();
   bool _isRecording = false;
   bool _isRecordingMic = false;
   String _voicePath = '';
@@ -32,10 +30,6 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
 
   Future<void> _startRecording() async {
     try {
-      // await _recorder.startRecorder(
-      //     toFile: pathToAudio,
-      //     codec: Codec.aacMP4);
-
       if (await record.hasPermission()) {
         // Start recording
         await record.start(
@@ -44,30 +38,28 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
           bitRate: 128000, // by default
           samplingRate: 44100, // by default
         );
-        bool _isRecordingMic = await record.isRecording();
+        _isRecordingMic = await record.isRecording();
         setState(() {
           _isRecordingMic = true;
         });
       }
     } catch (e) {
-      print('Failed to start recording: $e');
+      throw Exception('Exception: $e');
     }
   }
 
   Future<void> _stopRecording() async {
     try {
-      //    final voicePath = await _recorder.stopRecorder();
-      //     final voicePath = await _recorder.stopRecorder();
-      //     final audioVoicePath = File(voicePath!);
       await record.stop();
       setState(() {
         _isRecordingMic = false;
-        //     _voicePath = audioVoicePath.path;
         _voicePath = pathToAudio;
+        record.dispose();
       });
-      //     Navigator.pop(context, audioVoicePath.path);
+      Navigator.pop(context, _voicePath);
     } catch (e) {
-      print('Failed to stop recording: $e');
+      throw Exception('Exception: $e');
+      // print('Failed to stop recording: $e');
     }
   }
 
@@ -84,10 +76,13 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
   }
 
   Future initVoiceRecorder() async {
-    final status = await Permission.microphone.request();
-    if (status != PermissionStatus.granted) {
-      throw RecordingPermissionException('Microphone permission not granted');
+    //await Permission.microphone.request();
+
+    var statusMic = await Permission.microphone.status;
+    if (!statusMic.isGranted) {
+      await Permission.microphone.request();
     }
+
     var statusStorage = await Permission.storage.status;
     if (!statusStorage.isGranted) {
       await Permission.storage.request();
@@ -102,16 +97,11 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
       directory = "/storage/emulated/0/Downloads/";
     }
 
-    //  pathToAudio = '${directory}voicePrompt.mp4';
     pathToAudio = '${directory}voicePrompt.m4a';
-
-    //   await _recorder.openRecorder();
-    //   _recorder.setSubscriptionDuration(const Duration(milliseconds: 100));
   }
 
   @override
   void dispose() {
-    //  _recorder.closeRecorder();
     record.dispose();
     super.dispose();
   }
@@ -126,36 +116,9 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            // StreamBuilder<RecordingDisposition>(
-            //   stream: _recorder.onProgress,
-            //   builder: (context, snapshot) {
-            //     final disposition = snapshot.data;
-            //     return Text(
-            //         'Recording disposition: ${disposition?.toString() ?? 'Unkown'}');
-            //   },
-            // ),
             Text(_isRecordingMic ? 'Recording' : 'Not Recording'),
-            Text('Voice Path: $_voicePath'),
-            const SizedBox(height: 20),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     _startRecording();
-            //   },
-            //   child: const Icon(
-            //     Icons.mic,
-            //     size: 50,
-            //   ),
-            // ),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     _stopRecording();
-            //   },
-            //   child: const Icon(
-            //     Icons.stop,
-            //     size: 50,
-            //   ),
-            // ),
-
+//            Text('Voice Path: $_voicePath'),
+            const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
                 setState(() {
@@ -173,27 +136,26 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
                 size: 50,
               ),
             ),
-
+            const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
                 setState(() {
                   _playAudio = !_playAudio;
                 });
-                print('play');
                 if (_playAudio) playFunc();
                 if (!_playAudio) stopPlayFunc();
               },
               child: Icon(
-                _playAudio ? Icons.stop : Icons.mic,
+                _playAudio ? Icons.stop : Icons.play_arrow,
                 size: 50,
               ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context, _voicePath);
-              },
-              child: Icon(Icons.check),
-            )
+            // ElevatedButton(
+            //   onPressed: () {
+            //     Navigator.pop(context, _voicePath);
+            //   },
+            //   child: const Icon(Icons.check),
+            // )
           ],
         ),
       ),
