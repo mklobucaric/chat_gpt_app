@@ -3,6 +3,7 @@ import 'package:flutter_sound/flutter_sound.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
 import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:record/record.dart';
 
 class VoiceRecorder extends StatefulWidget {
   const VoiceRecorder({Key? key}) : super(key: key);
@@ -12,14 +13,16 @@ class VoiceRecorder extends StatefulWidget {
 }
 
 class _VoiceRecorderState extends State<VoiceRecorder> {
-  final _recorder = FlutterSoundRecorder();
+  // final _recorder = FlutterSoundRecorder();
   bool _isRecording = false;
+  bool _isRecordingMic = false;
   String _voicePath = '';
   bool _playAudio = false;
   //String pathToAudio = 'sdcard/Download/voicePrompt.mp4';
   String pathToAudio = '';
 
   final recordingPlayer = AssetsAudioPlayer();
+  final record = Record();
 
   @override
   void initState() {
@@ -29,11 +32,23 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
 
   Future<void> _startRecording() async {
     try {
-      await _recorder.startRecorder(
-          //    toFile: 'voicePrompt.mp4',
-          toFile: pathToAudio,
-          //       codec: Codec.aacADTS,
-          codec: Codec.aacMP4);
+      // await _recorder.startRecorder(
+      //     toFile: pathToAudio,
+      //     codec: Codec.aacMP4);
+
+      if (await record.hasPermission()) {
+        // Start recording
+        await record.start(
+          path: pathToAudio,
+          encoder: AudioEncoder.aacLc, // by default
+          bitRate: 128000, // by default
+          samplingRate: 44100, // by default
+        );
+        bool _isRecordingMic = await record.isRecording();
+        setState(() {
+          _isRecordingMic = true;
+        });
+      }
     } catch (e) {
       print('Failed to start recording: $e');
     }
@@ -42,10 +57,13 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
   Future<void> _stopRecording() async {
     try {
       //    final voicePath = await _recorder.stopRecorder();
-      final voicePath = await _recorder.stopRecorder();
-      final audioVoicePath = File(voicePath!);
+      //     final voicePath = await _recorder.stopRecorder();
+      //     final audioVoicePath = File(voicePath!);
+      await record.stop();
       setState(() {
-        _voicePath = audioVoicePath.path;
+        _isRecordingMic = false;
+        //     _voicePath = audioVoicePath.path;
+        _voicePath = pathToAudio;
       });
       //     Navigator.pop(context, audioVoicePath.path);
     } catch (e) {
@@ -84,15 +102,17 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
       directory = "/storage/emulated/0/Downloads/";
     }
 
-    pathToAudio = '${directory}voicePrompt.mp4';
+    //  pathToAudio = '${directory}voicePrompt.mp4';
+    pathToAudio = '${directory}voicePrompt.m4a';
 
-    await _recorder.openRecorder();
-    _recorder.setSubscriptionDuration(const Duration(milliseconds: 100));
+    //   await _recorder.openRecorder();
+    //   _recorder.setSubscriptionDuration(const Duration(milliseconds: 100));
   }
 
   @override
   void dispose() {
-    _recorder.closeRecorder();
+    //  _recorder.closeRecorder();
+    record.dispose();
     super.dispose();
   }
 
@@ -106,14 +126,15 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            StreamBuilder<RecordingDisposition>(
-              stream: _recorder.onProgress,
-              builder: (context, snapshot) {
-                final disposition = snapshot.data;
-                return Text(
-                    'Recording disposition: ${disposition?.toString() ?? 'Unkown'}');
-              },
-            ),
+            // StreamBuilder<RecordingDisposition>(
+            //   stream: _recorder.onProgress,
+            //   builder: (context, snapshot) {
+            //     final disposition = snapshot.data;
+            //     return Text(
+            //         'Recording disposition: ${disposition?.toString() ?? 'Unkown'}');
+            //   },
+            // ),
+            Text(_isRecordingMic ? 'Recording' : 'Not Recording'),
             Text('Voice Path: $_voicePath'),
             const SizedBox(height: 20),
             // ElevatedButton(

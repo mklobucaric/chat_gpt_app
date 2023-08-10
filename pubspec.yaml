@@ -46,6 +46,7 @@ dependencies:
   path_provider: ^2.1.0
   permission_handler: ^10.4.3
   assets_audio_player: ^3.0.3+3
+  record: ^4.4.4
   
 
 
