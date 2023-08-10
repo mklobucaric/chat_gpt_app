@@ -3,6 +3,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:record/record.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class VoiceRecorder extends StatefulWidget {
   const VoiceRecorder({Key? key}) : super(key: key);
@@ -16,66 +17,14 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
   bool _isRecordingMic = false;
   String _voicePath = '';
   bool _playAudio = false;
-  //String pathToAudio = 'sdcard/Download/voicePrompt.mp4';
-  String pathToAudio = '';
+  //String _pathToAudio = 'sdcard/Download/voicePrompt.mp4';
+  String _pathToAudio = '';
 
-  final recordingPlayer = AssetsAudioPlayer();
+  //final recordingPlayer = AssetsAudioPlayer();
   final record = Record();
+  final player = AudioPlayer();
 
-  @override
-  void initState() {
-    super.initState();
-    initVoiceRecorder();
-  }
-
-  Future<void> _startRecording() async {
-    try {
-      if (await record.hasPermission()) {
-        // Start recording
-        await record.start(
-          path: pathToAudio,
-          encoder: AudioEncoder.aacLc, // by default
-          bitRate: 128000, // by default
-          samplingRate: 44100, // by default
-        );
-        _isRecordingMic = await record.isRecording();
-        setState(() {
-          _isRecordingMic = true;
-        });
-      }
-    } catch (e) {
-      throw Exception('Exception: $e');
-    }
-  }
-
-  Future<void> _stopRecording() async {
-    try {
-      await record.stop();
-      setState(() {
-        _isRecordingMic = false;
-        _voicePath = pathToAudio;
-        record.dispose();
-      });
-      Navigator.pop(context, _voicePath);
-    } catch (e) {
-      throw Exception('Exception: $e');
-      // print('Failed to stop recording: $e');
-    }
-  }
-
-  Future<void> playFunc() async {
-    recordingPlayer.open(
-      Audio.file(pathToAudio),
-      autoStart: true,
-      showNotification: true,
-    );
-  }
-
-  Future<void> stopPlayFunc() async {
-    recordingPlayer.stop();
-  }
-
-  Future initVoiceRecorder() async {
+Future initVoiceRecorder() async {
     //await Permission.microphone.request();
 
     var statusMic = await Permission.microphone.status;
@@ -97,12 +46,74 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
       directory = "/storage/emulated/0/Downloads/";
     }
 
-    pathToAudio = '${directory}voicePrompt.m4a';
+    _pathToAudio = '${directory}voicePrompt.m4a';
+//    player.setSource(DeviceFileSource(_pathToAudio));
   }
+
+  @override
+  void initState() {
+    super.initState();
+    initVoiceRecorder();
+  }
+
+  Future<void> _startRecording() async {
+    try {
+      if (await record.hasPermission()) {
+        // Start recording
+        await record.start(
+          path: _pathToAudio,
+          encoder: AudioEncoder.aacLc, // by default
+          bitRate: 128000, // by default
+          samplingRate: 44100, // by default
+        );
+        _isRecordingMic = await record.isRecording();
+        setState(() {
+          _isRecordingMic = true;
+        });
+      }
+    } catch (e) {
+      throw Exception('Exception: $e');
+    }
+  }
+
+  Future<void> _stopRecording() async {
+    try {
+      await record.stop();
+      setState(() {
+        _isRecordingMic = false;
+        _voicePath = _pathToAudio;
+        record.dispose();
+      });
+      Navigator.pop(context, _voicePath);
+    } catch (e) {
+      throw Exception('Exception: $e');
+      // print('Failed to stop recording: $e');
+    }
+  }
+
+  Future<void> playFunc() async {
+    // recordingPlayer.open(
+    //   Audio.file(_pathToAudio),
+    //   autoStart: true,
+    //   showNotification: true,
+    // );
+    try {
+      await player.play(DeviceFileSource(_pathToAudio));
+    } catch (e) {
+      throw Exception('Exception: $e');
+  }
+
+  Future<void> stopPlayFunc() async {
+//    recordingPlayer.stop();
+    await player.stop();
+  }
+
+  
 
   @override
   void dispose() {
     record.dispose();
+    player.dispose();
     super.dispose();
   }
 
