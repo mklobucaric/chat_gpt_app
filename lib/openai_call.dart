@@ -42,6 +42,7 @@ Future<String> sendAudioFile(String filePath) async {
   final request = http.MultipartRequest('POST', Uri.parse(url));
   request.headers.addAll(headers);
   request.fields['model'] = 'whisper-1';
+  request.fields['language'] = 'en';
   request.files.add(await http.MultipartFile.fromPath('file', filePath));
   final response = await request.send();
   final data = await response.stream.bytesToString();

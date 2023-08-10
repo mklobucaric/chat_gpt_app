@@ -16,7 +16,8 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
   bool _isRecording = false;
   String _voicePath = '';
   bool _playAudio = false;
-  String pathToAudio = 'sdcard/Download/voicePrompt.mp4';
+  //String pathToAudio = 'sdcard/Download/voicePrompt.mp4';
+  String pathToAudio = '';
 
   final recordingPlayer = AssetsAudioPlayer();
 
@@ -30,7 +31,7 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
     try {
       await _recorder.startRecorder(
           //    toFile: 'voicePrompt.mp4',
-          toFile: 'sdcard/Download/voicePrompt.mp4',
+          toFile: pathToAudio,
           //       codec: Codec.aacADTS,
           codec: Codec.aacMP4);
     } catch (e) {
@@ -69,6 +70,22 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
     if (status != PermissionStatus.granted) {
       throw RecordingPermissionException('Microphone permission not granted');
     }
+    var statusStorage = await Permission.storage.status;
+    if (!statusStorage.isGranted) {
+      await Permission.storage.request();
+    }
+
+    String directory = "/storage/emulated/0/Download/";
+    bool dirDownloadExists = await Directory(directory).exists();
+
+    if (dirDownloadExists) {
+      directory = "/storage/emulated/0/Download/";
+    } else {
+      directory = "/storage/emulated/0/Downloads/";
+    }
+
+    pathToAudio = '${directory}voicePrompt.mp4';
+
     await _recorder.openRecorder();
     _recorder.setSubscriptionDuration(const Duration(milliseconds: 100));
   }

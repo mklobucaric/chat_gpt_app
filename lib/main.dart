@@ -94,7 +94,7 @@ class MyHomePageState extends State<MyHomePage> {
     setState(() {
       _queryController.text = transcribedText;
       _query = transcribedText;
-      //_sendQuery();
+      //ho_sendQuery();
     });
   }
 
