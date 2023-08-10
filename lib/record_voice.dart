@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
-import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:record/record.dart';
 import 'package:audioplayers/audioplayers.dart';
 
@@ -17,10 +16,8 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
   bool _isRecordingMic = false;
   String _voicePath = '';
   bool _playAudio = false;
-  //String _pathToAudio = 'sdcard/Download/voicePrompt.mp4';
   String _pathToAudio = '';
 
-  //final recordingPlayer = AssetsAudioPlayer();
   final record = Record();
   final player = AudioPlayer();
 
@@ -66,11 +63,6 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
   }
 
   Future<void> playFunc() async {
-    // recordingPlayer.open(
-    //   Audio.file(_pathToAudio),
-    //   autoStart: true,
-    //   showNotification: true,
-    // );
     try {
       await player.play(DeviceFileSource(_pathToAudio));
     } catch (e) {
@@ -79,7 +71,6 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
   }
 
   Future<void> stopPlayFunc() async {
-//    recordingPlayer.stop();
     await player.stop();
   }
 
@@ -106,7 +97,6 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
     }
 
     _pathToAudio = '${directory}voicePrompt.m4a';
-//    player.setSource(DeviceFileSource(_pathToAudio));
   }
 
   @override
@@ -160,12 +150,6 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
                 size: 50,
               ),
             ),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     Navigator.pop(context, _voicePath);
-            //   },
-            //   child: const Icon(Icons.check),
-            // )
           ],
         ),
       ),
