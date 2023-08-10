@@ -24,32 +24,6 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
   final record = Record();
   final player = AudioPlayer();
 
-Future initVoiceRecorder() async {
-    //await Permission.microphone.request();
-
-    var statusMic = await Permission.microphone.status;
-    if (!statusMic.isGranted) {
-      await Permission.microphone.request();
-    }
-
-    var statusStorage = await Permission.storage.status;
-    if (!statusStorage.isGranted) {
-      await Permission.storage.request();
-    }
-
-    String directory = "/storage/emulated/0/Download/";
-    bool dirDownloadExists = await Directory(directory).exists();
-
-    if (dirDownloadExists) {
-      directory = "/storage/emulated/0/Download/";
-    } else {
-      directory = "/storage/emulated/0/Downloads/";
-    }
-
-    _pathToAudio = '${directory}voicePrompt.m4a';
-//    player.setSource(DeviceFileSource(_pathToAudio));
-  }
-
   @override
   void initState() {
     super.initState();
@@ -101,6 +75,7 @@ Future initVoiceRecorder() async {
       await player.play(DeviceFileSource(_pathToAudio));
     } catch (e) {
       throw Exception('Exception: $e');
+    }
   }
 
   Future<void> stopPlayFunc() async {
@@ -108,7 +83,31 @@ Future initVoiceRecorder() async {
     await player.stop();
   }
 
-  
+  Future initVoiceRecorder() async {
+    //await Permission.microphone.request();
+
+    var statusMic = await Permission.microphone.status;
+    if (!statusMic.isGranted) {
+      await Permission.microphone.request();
+    }
+
+    var statusStorage = await Permission.storage.status;
+    if (!statusStorage.isGranted) {
+      await Permission.storage.request();
+    }
+
+    String directory = "/storage/emulated/0/Download/";
+    bool dirDownloadExists = await Directory(directory).exists();
+
+    if (dirDownloadExists) {
+      directory = "/storage/emulated/0/Download/";
+    } else {
+      directory = "/storage/emulated/0/Downloads/";
+    }
+
+    _pathToAudio = '${directory}voicePrompt.m4a';
+//    player.setSource(DeviceFileSource(_pathToAudio));
+  }
 
   @override
   void dispose() {
