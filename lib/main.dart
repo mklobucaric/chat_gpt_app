@@ -1,7 +1,6 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 import 'openai_call.dart';
-import 'package:file_picker/file_picker.dart';
 import 'record_voice.dart';
 
 // The main function that serves as the entry point of the application.
@@ -94,7 +93,7 @@ class MyHomePageState extends State<MyHomePage> {
     setState(() {
       _queryController.text = transcribedText;
       _query = transcribedText;
-      //ho_sendQuery();
+      _sendQuery();
     });
   }
 
