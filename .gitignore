@@ -5,17 +5,18 @@
 .packages
 .idea
 build/
-android/build/
+android/
 ios/ 
 linux/
 .vscode/
 *.iml
-.metadata
 web/build/
-windows/Runner/Debug/
-windows/Runner/Release/
 windows/
 web/
+macos/
+.metadata
+analysis_options.yaml
+chat_gpt_app.code-workspace
 
 
 # If you're building an application, you may want to check-in your pubspec.lock
