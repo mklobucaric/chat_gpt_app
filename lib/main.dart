@@ -101,9 +101,15 @@ class MyHomePageState extends State<MyHomePage> {
     final result = await Navigator.push(context,
         MaterialPageRoute(builder: (context) => const VoiceRecorder()));
     setState(() {
-      _voicePromptPath = result;
+      if (result != null) {
+        _voicePromptPath = result;
+      } else {
+        _voicePromptPath = '';
+      }
     });
-    _recordAudio(_voicePromptPath);
+    if (_voicePromptPath != '') {
+      _recordAudio(_voicePromptPath);
+    }
   }
 
   @override
