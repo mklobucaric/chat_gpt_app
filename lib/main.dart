@@ -125,19 +125,48 @@ class MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SingleChildScrollView(
-              child: TextField(
-                maxLines:
-                    4, // Sets the maximum number of lines for the query text field
-                controller:
-                    _queryController, // Binds the controller to the query text field
-                onChanged: (value) {
-                  setState(() {
-                    _query = value; // Updates the user's query
-                  });
+              child:
+
+                  // TextField(
+                  //   maxLines:
+                  //       4, // Sets the maximum number of lines for the query text field
+                  //   controller:
+                  //       _queryController, // Binds the controller to the query text field
+                  //   onChanged: (value) {
+                  //     setState(() {
+                  //       _query = value; // Updates the user's query
+                  //     });
+                  //   },
+                  //   decoration: const InputDecoration(
+                  //     border: OutlineInputBorder(),
+                  //     hintText:
+                  //         'Enter your query or voice prompt\nDouble click to clear',
+                  //   ),
+                  // ),
+
+                  GestureDetector(
+                onLongPress: () {
+                  _queryController.selection = TextSelection(
+                    baseOffset: 0,
+                    extentOffset: _queryController.text.length,
+                  ); // Sel
                 },
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Enter your query',
+                onDoubleTap: () {
+                  _queryController.clear(); // Clears the text field
+                },
+                child: TextField(
+                  maxLines: 4,
+                  controller: _queryController,
+                  onChanged: (value) {
+                    setState(() {
+                      _query = value;
+                    });
+                  },
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText:
+                        'Enter your query or voice prompt\nDouble click to clear',
+                  ),
                 ),
               ),
             ),

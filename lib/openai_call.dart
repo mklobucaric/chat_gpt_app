@@ -22,12 +22,13 @@ Future<String> sendQuery(List<dynamic> messsages) async {
   });
   final response = await http.post(Uri.parse(url),
       headers: headers, body: body); // Sends a POST request to the OpenAI API
-  final data = jsonDecode(response.body); // Parses the response body as JSON
+  final data = jsonDecode(response.body);
+  // Parses the response body as JSON
   final choices =
       data['choices']; // Retrieves the generated choices from the response
   final text = choices[0]['message']
       ['content']; // Retrieves the generated text from the first choice
-  return text; // Returns the generated text
+  return utf8.decode(text.codeUnits); // Returns the generated text
 }
 
 //Future<String> sendAudioFile(File audioFile) async {
