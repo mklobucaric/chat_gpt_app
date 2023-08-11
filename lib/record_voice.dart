@@ -3,6 +3,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
 import 'package:record/record.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:path_provider/path_provider.dart';
 
 class VoiceRecorder extends StatefulWidget {
   const VoiceRecorder({Key? key}) : super(key: key);
@@ -77,26 +78,64 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
   Future initVoiceRecorder() async {
     //await Permission.microphone.request();
 
+    // var statusMic = await Permission.microphone.status;
+    // if (!statusMic.isGranted) {
+    //   await Permission.microphone.request();
+    // }
+
+    // var statusStorage = await Permission.storage.status;
+    // if (!statusStorage.isGranted) {
+    //   await Permission.storage.request();
+    // }
+
+    // String directory = "/storage/emulated/0/Download/";
+    // bool dirDownloadExists = await Directory(directory).exists();
+
+    // if (dirDownloadExists) {
+    //   directory = "/storage/emulated/0/Download/";
+    // } else {
+    //   directory = "/storage/emulated/0/Downloads/";
+    // }
+
+    // _pathToAudio = '${directory}voicePrompt.m4a';
+
+    // Check the platform
     var statusMic = await Permission.microphone.status;
     if (!statusMic.isGranted) {
       await Permission.microphone.request();
     }
 
-    var statusStorage = await Permission.storage.status;
-    if (!statusStorage.isGranted) {
-      await Permission.storage.request();
+    if (Platform.isAndroid) {
+      // var statusMic = await Permission.microphone.status;
+      // if (!statusMic.isGranted) {
+      //   await Permission.microphone.request();
+      // }
+
+      var statusStorage = await Permission.storage.status;
+      if (!statusStorage.isGranted) {
+        await Permission.storage.request();
+      }
+
+      String directory = "/storage/emulated/0/Download/";
+      bool dirDownloadExists = await Directory(directory).exists();
+
+      if (dirDownloadExists) {
+        directory = "/storage/emulated/0/Download/";
+      } else {
+        directory = "/storage/emulated/0/Downloads/";
+      }
+
+      _pathToAudio = '${directory}voicePrompt.m4a';
+    } else if (Platform.isWindows) {
+      // For Windows, use the Downloads folder
+      final Directory? directory = await getDownloadsDirectory();
+      //    String directory = await DownloadsPathProvider.downloadsDirectory;
+      //   _pathToAudio = '${directory!.path}\\voicePrompt.m4a';
+      // setState(() {
+      //   _pathToAudio = '${directory!.path}\\voicePrompt.m4a';
+      // });
+      _pathToAudio = '${directory!.path}\\voicePrompt.m4a';
     }
-
-    String directory = "/storage/emulated/0/Download/";
-    bool dirDownloadExists = await Directory(directory).exists();
-
-    if (dirDownloadExists) {
-      directory = "/storage/emulated/0/Download/";
-    } else {
-      directory = "/storage/emulated/0/Downloads/";
-    }
-
-    _pathToAudio = '${directory}voicePrompt.m4a';
   }
 
   @override
