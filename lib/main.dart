@@ -2,6 +2,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 import 'openai_call.dart';
 import 'record_voice.dart';
+import 'widgets.dart';
 
 // The main function that serves as the entry point of the application.
 Future main() async {
@@ -41,6 +42,30 @@ class MyHomePageState extends State<MyHomePage> {
   String _reply = ''; // Stores the AI assistant's response
   String _voicePromptPath = ''; // Stores the path to the voice prompt
   bool _isLoading = false; // Indicates if a query is being sent
+  String selectedText = '';
+  // final List<String> _modes = ['mode', 'creativity', 'model'];
+  int _selectedIndex = 0;
+//  final List<String> _label = ['normal', '1', 'gpt-3.5-turbo'];
+  final Map<String, dynamic> _label = {
+    'mode': 'education',
+    'creativity': '1',
+    'model': 'gpt-3.5-turbo-16k-0613'
+  };
+  final List<String> _modes = [
+    'boys-10y',
+    'girls-13y',
+    'normal',
+    'education',
+  ];
+  final List<String> _models = [
+    'gpt-3.5-turbo',
+    'gpt-3.5-turbo-0613',
+    'gpt-3.5-turbo-16k',
+    'gpt-3.5-turbo-16k-0613',
+    'gpt-4',
+    'gpt-4-0613',
+  ];
+
   final TextEditingController _queryController =
       TextEditingController(); // Controller for the query text field
   List<dynamic> messsages = [
@@ -80,8 +105,8 @@ class MyHomePageState extends State<MyHomePage> {
         "content": reply
       }); // Adds the assistant's response to the conversation
       _isLoading = false; // Resets the loading state
-      _queryController.clear();
-      _queryController.text = '';
+      // _queryController.clear();
+      // _queryController.text = '';
     });
   }
 
@@ -116,8 +141,8 @@ class MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-            'Chat with GPT-3.5-Turbo-16k-0613'), // Sets the app bar title
+        title: const Text('Personal assistant'),
+        centerTitle: true, // Sets the app bar title
       ),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
@@ -130,7 +155,7 @@ class MyHomePageState extends State<MyHomePage> {
                   _queryController.clear(); // Clears the text field
                 },
                 child: TextField(
-                  maxLines: 4,
+                  maxLines: null,
                   controller: _queryController,
                   onChanged: (value) {
                     setState(() {
@@ -155,12 +180,14 @@ class MyHomePageState extends State<MyHomePage> {
                       : () {
                           _sendQuery();
                         },
-                  child: const Text('Send'),
+                  child: const Icon(Icons.send),
                 ),
                 const SizedBox(width: 16), // Add some space between the buttons
                 ElevatedButton(
                   onPressed: _voiceRecorerScreen,
-                  child: const Text('Voice prompt'),
+                  child: const Icon(
+                    Icons.interpreter_mode,
+                  ),
                 ),
               ],
             ),
@@ -205,6 +232,88 @@ class MyHomePageState extends State<MyHomePage> {
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: const Icon(
+              Icons.school,
+            ),
+            label: _label['mode'],
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(
+              Icons.spa,
+            ),
+            label: _label['creativity'],
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(
+              Icons.precision_manufacturing,
+            ),
+            label: _label['model'],
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        onTap: (index) {
+          _selectedIndex = index;
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                content: Wrap(
+                  direction: Axis.vertical,
+                  children: <Widget>[
+                    if (index == 0) // education
+                      Wrap(
+                        children: <ChoiceChip>[
+                          for (var mode in _modes)
+                            ChoiceChip(
+                              label: Text(mode),
+                              selected: _modes[index] == mode,
+                              onSelected: (bool selected) {
+                                setState(() {
+                                  _label['mode'] = mode;
+                                });
+                                Navigator.pop(context);
+                              },
+                            ),
+                        ],
+                      ),
+                    if (index == 1) // creativity
+                      SliderWidget(
+                        value: double.parse(_label['creativity']),
+                        onChanged: (value) {
+                          setState(() {
+                            _label['creativity'] = value.toStringAsFixed(1);
+                          });
+                        },
+                        onSendPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                    if (index == 2) // gpt-model
+                      Wrap(
+                        children: <ChoiceChip>[
+                          for (var model in _models)
+                            ChoiceChip(
+                              label: Text(model),
+                              selected: _label['model'] == model,
+                              onSelected: (bool selected) {
+                                setState(() {
+                                  _label['model'] = model;
+                                });
+                                Navigator.pop(context);
+                              },
+                            ),
+                        ],
+                      ),
+                  ],
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }
