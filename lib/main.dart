@@ -3,11 +3,24 @@ import 'package:flutter/material.dart';
 import 'openai_call.dart';
 import 'record_voice.dart';
 import 'widgets.dart';
+import 'write_read_storage.dart';
+
+Map<String, dynamic> _label = {
+  'mode': 'education',
+  'creativity': '1',
+  'model': 'gpt-3.5-turbo-16k-0613'
+};
+
+Future<void> loadLabelMap() async {
+  _label = await loadMapFromFile();
+}
 
 // The main function that serves as the entry point of the application.
 Future main() async {
   await dotenv.load(
       fileName: '.env'); // Loads environment variables from a .env file
+  WidgetsFlutterBinding.ensureInitialized();
+  await loadLabelMap();
   runApp(const MyApp()); // Runs the app
 }
 
@@ -46,14 +59,14 @@ class MyHomePageState extends State<MyHomePage> {
   // final List<String> _modes = ['mode', 'creativity', 'model'];
   int _selectedIndex = 0;
 //  final List<String> _label = ['normal', '1', 'gpt-3.5-turbo'];
-  final Map<String, dynamic> _label = {
-    'mode': 'education',
-    'creativity': '1',
-    'model': 'gpt-3.5-turbo-16k-0613'
-  };
+  // Map<String, dynamic> _label = {
+  //   'mode': 'education',
+  //   'creativity': '1',
+  //   'model': 'gpt-3.5-turbo-16k-0613'
+  // };
   final List<String> _modes = [
-    'boys-10y',
-    'girls-13y',
+    'kids-boys-10y',
+    'kids-girls-13y',
     'normal',
     'education',
   ];
@@ -68,6 +81,48 @@ class MyHomePageState extends State<MyHomePage> {
 
   final TextEditingController _queryController =
       TextEditingController(); // Controller for the query text field
+
+  final Map<String, dynamic> _initialPrompts = {
+    'kids-boys-10y': [
+      {
+        "role": "system",
+        "content": "You are a very helpful personal assistant and a world-class, patient educator for kids. "
+            "You are educating 10 years old boy. Your responses should easy understandable for her "
+            " not be too long and not trivial. Don't make up answers If you do not know something, "
+            "you can say: "
+            "'I do not know. Give me more details.' Your responses should be in Croatian language."
+      }
+    ],
+    'kids-girls-13y': [
+      {
+        "role": "system",
+        "content": "You are a very helpful personal assistant and a world-class, patient educator for kids. "
+            "You are educating 13 years old girl. Your responses should easy understandable for her "
+            " not be too long and not trivial. Don't make up answers If you do not know something, "
+            "you can say: "
+            "'I do not know. Give me more details.' Your responses should be in Croatian language."
+      }
+    ],
+    'normal': [
+      {
+        "role": "system",
+        "content":
+            "You are a very helpful personal assistant with critical thinking and are trying to"
+                "give responses around 300 characters"
+      }
+    ],
+    'education': [
+      {
+        "role": "system",
+        "content": "You are a very helpful personal assistant and world class educator (like prof. Richard Feynman and his sense for humor), "
+            "here to help and explain all kind of basic and difficult concepts in simple and concisely way."
+            "Your output is structured in some general info and the rest in bullet points "
+            "starting with numbers like 1., a., i. when necessary. You are able to summarize "
+            "long texts."
+      }
+    ]
+  };
+
   List<dynamic> messsages = [
     {
       "role": "system",
@@ -78,6 +133,10 @@ class MyHomePageState extends State<MyHomePage> {
           "long texts."
     }
   ]; // Stores the conversation messages
+
+  Future<void> loadLabelMap() async {
+    _label = await loadMapFromFile();
+  }
 
   @override
   void dispose() {
@@ -96,7 +155,10 @@ class MyHomePageState extends State<MyHomePage> {
     });
 
     final reply = await sendQuery(
-        messsages); // Calls the sendQuery function from openai_call.dart
+        messsages,
+        _label['model'],
+        _label[
+            'creativity']); // Calls the sendQuery function from openai_call.dart
 
     setState(() {
       _reply = reply; // Updates the AI assistant's response
@@ -216,17 +278,7 @@ class MyHomePageState extends State<MyHomePage> {
                   ),
             ElevatedButton(
               onPressed: () {
-                messsages = [
-                  {
-                    "role": "system",
-                    "content": "You are a very helpful personal assistant and world class educator (like prof. Richard Feynman and his sense for humor), "
-                        "here to help and explain all kind of basic and difficult concepts in simple and concisely way."
-                        "Your output is structured in some general info and the rest in bullet points "
-                        "starting with numbers like 1., a., i. when necessary. You are able to summarize "
-                        "long texts."
-                        "long texts."
-                  }
-                ];
+                messsages = _initialPrompts['education'];
               },
               child: const Text('New query'),
             ),
@@ -275,6 +327,8 @@ class MyHomePageState extends State<MyHomePage> {
                                 setState(() {
                                   _label['mode'] = mode;
                                 });
+                                saveMapToFile(_label);
+                                messsages = _initialPrompts[mode];
                                 Navigator.pop(context);
                               },
                             ),
@@ -282,11 +336,12 @@ class MyHomePageState extends State<MyHomePage> {
                       ),
                     if (index == 1) // creativity
                       SliderWidget(
-                        value: double.parse(_label['creativity']),
+                        value: double.parse(_label['creativity']!),
                         onChanged: (value) {
                           setState(() {
                             _label['creativity'] = value.toStringAsFixed(1);
                           });
+                          saveMapToFile(_label);
                         },
                         onSendPressed: () {
                           Navigator.pop(context);
@@ -303,6 +358,7 @@ class MyHomePageState extends State<MyHomePage> {
                                 setState(() {
                                   _label['model'] = model;
                                 });
+                                saveMapToFile(_label);
                                 Navigator.pop(context);
                               },
                             ),

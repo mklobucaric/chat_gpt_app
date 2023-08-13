@@ -4,9 +4,11 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 Future<void> requestStoragePermission() async {
-  PermissionStatus status = await Permission.storage.request();
-  if (status.isDenied) {
-    // Handle permission denied
+  if (Platform.isAndroid) {
+    var statusStorage = await Permission.storage.status;
+    if (!statusStorage.isGranted) {
+      await Permission.storage.request();
+    }
   }
 }
 
@@ -14,7 +16,7 @@ Future<void> saveMapToFile(Map<String, dynamic> map) async {
   await requestStoragePermission();
 
   final directory = await getDownloadsDirectory();
-  final file = File('${directory?.path}/map_data.json');
+  final file = File('${directory?.path}\\_label.json');
   final encodedMap = jsonEncode(map);
 
   await file.writeAsString(encodedMap);
@@ -24,7 +26,7 @@ Future<Map<String, dynamic>> loadMapFromFile() async {
   await requestStoragePermission();
 
   final directory = await getDownloadsDirectory();
-  final file = File('${directory?.path}/map_data.json');
+  final file = File('${directory?.path}\\_label.json');
 
   if (await file.exists()) {
     final encodedMap = await file.readAsString();

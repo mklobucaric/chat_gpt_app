@@ -3,7 +3,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 // Sends the query to the OpenAI API and returns the reply.
-Future<String> sendQuery(List<dynamic> messsages) async {
+Future<String> sendQuery(
+    List<dynamic> messsages, String model, String temperature) async {
   String? apiKey = dotenv.env[
       'OPENAI_API_KEY']; // Retrieves the OpenAI API key from the environment
   const url =
@@ -15,9 +16,10 @@ Future<String> sendQuery(List<dynamic> messsages) async {
   };
 
   final body = jsonEncode({
-    'model': 'gpt-3.5-turbo-16k-0613', // Specifies the model to use
+    'model': model, // Specifies the model to use
     'messages': messsages, // Sets the conversation messages
-    'temperature': 0.7, // Controls the randomness of the generated response
+    'temperature': double.parse(
+        temperature), // Controls the randomness of the generated response
     'n': 1, // Specifies the number of responses to generate
   });
   final response = await http.post(Uri.parse(url),
