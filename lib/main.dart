@@ -5,6 +5,7 @@ import 'record_voice.dart';
 import 'widgets.dart';
 import 'write_read_storage.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'my_utils.dart';
 
 Map<String, dynamic> _label = {
   'mode': 'education',
@@ -282,7 +283,11 @@ class MyHomePageState extends State<MyHomePage> {
                   ),
             ElevatedButton(
               onPressed: () {
-                _messages = _initialPrompts[_label['mode']];
+                //  _messages = _initialPrompts[_label['mode']];
+                setState(() {
+                  _messages = deepCopyList(_initialPrompts[_label['mode']]);
+                });
+                //           _messages = deepCopyList(_initialPrompts[_label['mode']]);
               },
               child: const Text('New query'),
             ),
@@ -333,7 +338,8 @@ class MyHomePageState extends State<MyHomePage> {
                                   _label['mode'] = mode;
                                 });
                                 saveMapToFile(_label);
-                                _messages = _initialPrompts[_label['mode']];
+                                _messages = deepCopyList(
+                                    _initialPrompts[_label['mode']]);
                                 Navigator.pop(context);
                               },
                             ),
