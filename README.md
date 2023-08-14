@@ -11,8 +11,7 @@ This is a Flutter based app that acts like a personal assistant and educator whi
 - Real-time updates of the conversation history.
 
 ### Screenshots
-
-![Screenshot 1](/GPT_assistant_app.jpg)
+<img src="GPT_assistant_app.jpg" alt="Image description" width="200" height="200">
 
 
 ## Installation
