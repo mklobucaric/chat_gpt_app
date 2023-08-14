@@ -82,11 +82,6 @@ class _VoiceRecorderState extends State<VoiceRecorder> {
     }
 
     if (Platform.isAndroid) {
-      // var statusStorage = await Permission.storage.status;
-      // if (!statusStorage.isGranted) {
-      //   await Permission.storage.request();
-      //    }
-
       String directory = "/storage/emulated/0/Download/";
       bool dirDownloadExists = await Directory(directory).exists();
 

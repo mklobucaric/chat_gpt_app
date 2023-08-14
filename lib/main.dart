@@ -13,12 +13,65 @@ Map<String, dynamic> _label = {
   'model': 'gpt-3.5-turbo-16k-0613'
 };
 
+final Map<String, dynamic> _initialPrompts = {
+  'kids-boys-10y': [
+    {
+      "role": "system",
+      "content": "You are a very helpful personal assistant and a world-class, patient educator for kids. "
+          "You are educating 10 years old boy. Your responses should easy understandable for her "
+          " not be too long and not trivial. Don't make up answers If you do not know something, "
+          "you can say: "
+          "'I do not know. Give me more details.' Your responses should be in Croatian language."
+    }
+  ],
+  'kids-girls-13y': [
+    {
+      "role": "system",
+      "content": "You are a very helpful personal assistant and a world-class, patient educator for kids. "
+          "You are educating 13 years old girl. Your responses should easy understandable for her "
+          " not be too long and not trivial. Don't make up answers If you do not know something, "
+          "you can say: "
+          "'I do not know. Give me more details.' Your responses should be in Croatian language."
+    }
+  ],
+  'normal': [
+    {
+      "role": "system",
+      "content":
+          "You are a very helpful personal assistant with critical thinking and are trying to"
+              "give responses around 300 characters"
+    }
+  ],
+  'education': [
+    {
+      "role": "system",
+      "content": "You are a very helpful personal assistant and world class educator (like prof. Richard Feynman and his sense for humor), "
+          "here to help and explain all kind of basic and difficult concepts in simple and concisely way."
+          "Your output is structured in some general info and the rest in bullet points "
+          "starting with numbers like 1., a., i. when necessary. You are able to summarize "
+          "long texts."
+    }
+  ]
+};
+
+List<dynamic> _messages = [
+  {
+    "role": "system",
+    "content": "You are a very helpful personal assistant and world class educator (like prof. Richard Feynman and his sense for humor), "
+        "here to help and explain all kind of basic and difficult concepts in simple and concisely way."
+        "Your output is structured in some general info and the rest in bullet points "
+        "starting with numbers like 1., a., i. when necessary. You are able to summarize "
+        "long texts."
+  }
+]; // Stores the conversation _messages
+
 Future<void> loadLabelMap() async {
   var statusStorage = await Permission.storage.status;
   if (!statusStorage.isGranted) {
     await Permission.storage.request();
   }
   _label = await loadMapFromFile();
+  _messages = deepCopyList(_initialPrompts[_label['mode']]);
 }
 
 // The main function that serves as the entry point of the application.
@@ -62,14 +115,9 @@ class MyHomePageState extends State<MyHomePage> {
   String _voicePromptPath = ''; // Stores the path to the voice prompt
   bool _isLoading = false; // Indicates if a query is being sent
   String selectedText = '';
-  // final List<String> _modes = ['mode', 'creativity', 'model'];
+
   int _selectedIndex = 0;
-//  final List<String> _label = ['normal', '1', 'gpt-3.5-turbo'];
-  // Map<String, dynamic> _label = {
-  //   'mode': 'education',
-  //   'creativity': '1',
-  //   'model': 'gpt-3.5-turbo-16k-0613'
-  // };
+
   final List<String> _modes = [
     'kids-boys-10y',
     'kids-girls-13y',
@@ -88,58 +136,6 @@ class MyHomePageState extends State<MyHomePage> {
   final TextEditingController _queryController =
       TextEditingController(); // Controller for the query text field
 
-  final Map<String, dynamic> _initialPrompts = {
-    'kids-boys-10y': [
-      {
-        "role": "system",
-        "content": "You are a very helpful personal assistant and a world-class, patient educator for kids. "
-            "You are educating 10 years old boy. Your responses should easy understandable for her "
-            " not be too long and not trivial. Don't make up answers If you do not know something, "
-            "you can say: "
-            "'I do not know. Give me more details.' Your responses should be in Croatian language."
-      }
-    ],
-    'kids-girls-13y': [
-      {
-        "role": "system",
-        "content": "You are a very helpful personal assistant and a world-class, patient educator for kids. "
-            "You are educating 13 years old girl. Your responses should easy understandable for her "
-            " not be too long and not trivial. Don't make up answers If you do not know something, "
-            "you can say: "
-            "'I do not know. Give me more details.' Your responses should be in Croatian language."
-      }
-    ],
-    'normal': [
-      {
-        "role": "system",
-        "content":
-            "You are a very helpful personal assistant with critical thinking and are trying to"
-                "give responses around 300 characters"
-      }
-    ],
-    'education': [
-      {
-        "role": "system",
-        "content": "You are a very helpful personal assistant and world class educator (like prof. Richard Feynman and his sense for humor), "
-            "here to help and explain all kind of basic and difficult concepts in simple and concisely way."
-            "Your output is structured in some general info and the rest in bullet points "
-            "starting with numbers like 1., a., i. when necessary. You are able to summarize "
-            "long texts."
-      }
-    ]
-  };
-
-  List<dynamic> _messages = [
-    {
-      "role": "system",
-      "content": "You are a very helpful personal assistant and world class educator (like prof. Richard Feynman and his sense for humor), "
-          "here to help and explain all kind of basic and difficult concepts in simple and concisely way."
-          "Your output is structured in some general info and the rest in bullet points "
-          "starting with numbers like 1., a., i. when necessary. You are able to summarize "
-          "long texts."
-    }
-  ]; // Stores the conversation _messages
-
   Future<void> loadLabelMap() async {
     _label = await loadMapFromFile();
   }
@@ -154,13 +150,8 @@ class MyHomePageState extends State<MyHomePage> {
   Future<void> _sendQuery() async {
     setState(() {
       _isLoading = true; // Sets the loading state
-      // _messages.add({
-      //   "role": "user",
-      //   "content": _query
-      // }); // Adds the user's query to the conversation
+      _messages.add({"role": "user", "content": _query});
     });
-
-    _messages.add({"role": "user", "content": _query});
 
     final reply = await sendQuery(
         _messages,
@@ -172,9 +163,8 @@ class MyHomePageState extends State<MyHomePage> {
       _reply = reply; // Updates the AI assistant's response
       // Adds the assistant's response to the conversation
       _isLoading = false; // Resets the loading state
+      _messages.add({"role": "assistant", "content": reply});
     });
-
-    _messages.add({"role": "assistant", "content": reply});
   }
 
   Future<void> _recordAudio(String filePath) async {
@@ -283,11 +273,9 @@ class MyHomePageState extends State<MyHomePage> {
                   ),
             ElevatedButton(
               onPressed: () {
-                //  _messages = _initialPrompts[_label['mode']];
                 setState(() {
                   _messages = deepCopyList(_initialPrompts[_label['mode']]);
                 });
-                //           _messages = deepCopyList(_initialPrompts[_label['mode']]);
               },
               child: const Text('New query'),
             ),
