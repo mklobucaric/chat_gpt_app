@@ -8,9 +8,12 @@ import 'package:permission_handler/permission_handler.dart';
 import 'my_utils.dart';
 
 Map<String, dynamic> _label = {
-  'mode': 'education',
-  'creativity': '1',
-  'model': 'gpt-3.5-turbo-16k-0613'
+  'mode':
+      'education', // 1. Initializing the 'mode' label with the default value 'education'
+  'creativity':
+      '1', // 2. Initializing the 'creativity' label with the default value '1'
+  'model':
+      'gpt-3.5-turbo-16k-0613' // 3. Initializing the 'model' label with the default value 'gpt-3.5-turbo-16k-0613'
 };
 
 final Map<String, dynamic> _initialPrompts = {
@@ -34,12 +37,19 @@ final Map<String, dynamic> _initialPrompts = {
           "'I do not know. Give me more details.' Your responses should be in Croatian language."
     }
   ],
-  'normal': [
+  'short': [
     {
       "role": "system",
       "content":
           "You are a very helpful personal assistant with critical thinking and are trying to"
               "give responses around 300 characters"
+    }
+  ],
+  'normal': [
+    {
+      "role": "system",
+      "content":
+          "You are a very helpful personal assistant with critical thinking"
     }
   ],
   'education': [
@@ -70,8 +80,9 @@ Future<void> loadLabelMap() async {
   if (!statusStorage.isGranted) {
     await Permission.storage.request();
   }
-  _label = await loadMapFromFile();
-  _messages = deepCopyList(_initialPrompts[_label['mode']]);
+  _label = await loadMapFromFile(); // 4. Loading label map from file
+  _messages = deepCopyList(_initialPrompts[
+      _label['mode']]); // 5. Loading initial prompts based on the 'mode' label
 }
 
 // The main function that serves as the entry point of the application.
@@ -85,7 +96,7 @@ Future main() async {
 
 // The root widget of the application.
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key});
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +112,7 @@ class MyApp extends StatelessWidget {
 
 // The home page widget.
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+  const MyHomePage({Key? key});
 
   @override
   MyHomePageState createState() =>
@@ -121,6 +132,7 @@ class MyHomePageState extends State<MyHomePage> {
   final List<String> _modes = [
     'kids-boys-10y',
     'kids-girls-13y',
+    'short',
     'normal',
     'education',
   ];
@@ -136,8 +148,10 @@ class MyHomePageState extends State<MyHomePage> {
   final TextEditingController _queryController =
       TextEditingController(); // Controller for the query text field
 
-  Future<void> loadLabelMap() async {
-    _label = await loadMapFromFile();
+  FocusNode _focusNode = FocusNode();
+
+  Future loadLabelMap() async {
+    _label = await loadMapFromFile(); // 6. Loading label map from file
   }
 
   @override
@@ -150,7 +164,10 @@ class MyHomePageState extends State<MyHomePage> {
   Future<void> _sendQuery() async {
     setState(() {
       _isLoading = true; // Sets the loading state
-      _messages.add({"role": "user", "content": _query});
+      _messages.add({
+        "role": "user",
+        "content": _query
+      }); // 7. Adding user query to the conversation messages
     });
 
     final reply = await sendQuery(
@@ -163,7 +180,10 @@ class MyHomePageState extends State<MyHomePage> {
       _reply = reply; // Updates the AI assistant's response
       // Adds the assistant's response to the conversation
       _isLoading = false; // Resets the loading state
-      _messages.add({"role": "assistant", "content": reply});
+      _messages.add({
+        "role": "assistant",
+        "content": reply
+      }); // 8. Adding assistant's response to the conversation messages
     });
   }
 
@@ -212,11 +232,12 @@ class MyHomePageState extends State<MyHomePage> {
                   _queryController.clear(); // Clears the text field
                 },
                 child: TextField(
+                  focusNode: _focusNode,
                   maxLines: null,
                   controller: _queryController,
                   onChanged: (value) {
                     setState(() {
-                      _query = value;
+                      _query = value; // Updates the user's query
                     });
                   },
                   decoration: const InputDecoration(
@@ -236,12 +257,17 @@ class MyHomePageState extends State<MyHomePage> {
                       ? null
                       : () {
                           _sendQuery();
+                          _focusNode.unfocus();
                         },
                   child: const Icon(Icons.send),
                 ),
                 const SizedBox(width: 16), // Add some space between the buttons
                 ElevatedButton(
-                  onPressed: _voiceRecorerScreen,
+                  onPressed: () {
+                    // Add your code here
+                    _voiceRecorerScreen();
+                    _focusNode.unfocus();
+                  },
                   child: const Icon(
                     Icons.interpreter_mode,
                   ),
@@ -274,7 +300,8 @@ class MyHomePageState extends State<MyHomePage> {
             ElevatedButton(
               onPressed: () {
                 setState(() {
-                  _messages = deepCopyList(_initialPrompts[_label['mode']]);
+                  _messages = deepCopyList(_initialPrompts[
+                      _label['mode']]); // 9. Resets the conversation messages
                 });
               },
               child: const Text('New query'),
@@ -288,19 +315,22 @@ class MyHomePageState extends State<MyHomePage> {
             icon: const Icon(
               Icons.school,
             ),
-            label: _label['mode'],
+            label: _label[
+                'mode'], // 10. Displaying the current 'mode' label in the bottom navigation bar
           ),
           BottomNavigationBarItem(
             icon: const Icon(
               Icons.spa,
             ),
-            label: _label['creativity'],
+            label: _label[
+                'creativity'], // 11. Displaying the current 'creativity' label in the bottom navigation bar
           ),
           BottomNavigationBarItem(
             icon: const Icon(
               Icons.precision_manufacturing,
             ),
-            label: _label['model'],
+            label: _label[
+                'model'], // 12. Displaying the current 'model' label in the bottom navigation bar
           ),
         ],
         currentIndex: _selectedIndex,
@@ -323,11 +353,13 @@ class MyHomePageState extends State<MyHomePage> {
                               selected: _modes[index] == mode,
                               onSelected: (bool selected) {
                                 setState(() {
-                                  _label['mode'] = mode;
+                                  _label['mode'] =
+                                      mode; // 13. Updates the 'mode' label based on the selected value
                                 });
-                                saveMapToFile(_label);
-                                _messages = deepCopyList(
-                                    _initialPrompts[_label['mode']]);
+                                saveMapToFile(
+                                    _label); // Saves the label map to file
+                                _messages = deepCopyList(_initialPrompts[_label[
+                                    'mode']]); // 14. Updates the conversation messages based on the new 'mode' label
                                 Navigator.pop(context);
                               },
                             ),
@@ -335,12 +367,14 @@ class MyHomePageState extends State<MyHomePage> {
                       ),
                     if (index == 1) // creativity
                       SliderWidget(
-                        value: double.parse(_label['creativity']!),
+                        value: double.parse(_label[
+                            'creativity']!), // 15. Converts the 'creativity' label to double for the SliderWidget
                         onChanged: (value) {
                           setState(() {
-                            _label['creativity'] = value.toStringAsFixed(1);
+                            _label['creativity'] = value.toStringAsFixed(
+                                1); // 16. Updates the 'creativity' label based on the slider value
                           });
-                          saveMapToFile(_label);
+                          saveMapToFile(_label); // Saves the label map to file
                         },
                         onSendPressed: () {
                           Navigator.pop(context);
@@ -356,9 +390,11 @@ class MyHomePageState extends State<MyHomePage> {
                               selected: _label['model'] == model,
                               onSelected: (bool selected) {
                                 setState(() {
-                                  _label['model'] = model;
+                                  _label['model'] =
+                                      model; // 17. Updates the 'model' label based on the selected value
                                 });
-                                saveMapToFile(_label);
+                                saveMapToFile(
+                                    _label); // Saves the label map to file
                                 Navigator.pop(context);
                               },
                             ),

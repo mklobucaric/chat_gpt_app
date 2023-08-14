@@ -1,12 +1,19 @@
-# Flutter Chat App with OpenAI Integration
+# Flutter Personal Assistant
 
-This is a Flutter chat application that integrates with the OpenAI API to provide conversational responses using the GPT-3.5-Turbo-16k-0613 model. The app allows users to enter queries and receive responses from the AI assistant.
+This is a Flutter based app that acts like a personal assistant and educator which uses OpenAI's GPT Chat API. It is designed to mimic as an assistant but with different mode of conversations/learning such as kids-boys-10y, kids-girls-13y, short, normal and education. It includes option for voice prompts and assistant's response are based on set of labels which includes 'mode', 'creativity' and 'model'.
 
 ## Features
 
-- User-friendly interface for entering queries and viewing responses.
-- Integration with the OpenAI API to generate AI-powered responses.
+- Choice to select mode with Five options: Kids-Boys, Kids-Girls, Short, Normal, Education.
+- Voice prompt feature
+- Flexibility to adjust creativity using slider.
+- Selection of OpenAI GPT model.
 - Real-time updates of the conversation history.
+
+### Screenshots
+
+![Screenshot 1](/GPT_assistant_app.jpg)
+
 
 ## Installation
 
@@ -40,11 +47,19 @@ This is a Flutter chat application that integrates with the OpenAI API to provid
    flutter run
    ```
 
-## Usage
+## User Guidelines
 
-1. Launch the app on your device or emulator.
-2. Enter your queries in the text field and tap the "Send" button.
-3. The app will send the query to the OpenAI API and display the AI-generated response.
-4. You can continue the conversation by entering new queries and receiving updated responses.
-5. To start a new conversation, tap the "New query" button.
+1. You can begin by typing in your query in the text-field. Hint: Double click to clear the field.
+2. Click on Send or use Voice Interpreter feature represented with an Icon.
+3. The response from AI assistant will be visible below Text Input Field.
+4. Use Bottom Navigation bar to switch labels and update parameters about mode, creativity and model.
+5. For new query, click on 'New Query' button.
+
+## Dependencies
+
+- flutter_dotenv: ^5.0.0
+- permission_handler: ^14.0.0
+- record: ^3.0.0
+- audioplayers: ^0.20.0
+- path_provider: ^2.0.0
 
