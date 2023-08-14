@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 
 // Sends the query to the OpenAI API and returns the reply.
 Future<String> sendQuery(
-    List<dynamic> messsages, String model, String temperature) async {
+    List<dynamic> messages, String model, String temperature) async {
   String? apiKey = dotenv.env[
       'OPENAI_API_KEY']; // Retrieves the OpenAI API key from the environment
   const url =
@@ -17,7 +17,7 @@ Future<String> sendQuery(
 
   final body = jsonEncode({
     'model': model, // Specifies the model to use
-    'messages': messsages, // Sets the conversation messages
+    'messages': messages, // Sets the conversation messages
     'temperature': double.parse(
         temperature), // Controls the randomness of the generated response
     'n': 1, // Specifies the number of responses to generate

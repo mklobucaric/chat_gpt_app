@@ -26,7 +26,7 @@ class _SliderWidgetState extends State<SliderWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Wrap(
       children: [
         Slider(
           value: _sliderValue,

@@ -4,6 +4,7 @@ import 'openai_call.dart';
 import 'record_voice.dart';
 import 'widgets.dart';
 import 'write_read_storage.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 Map<String, dynamic> _label = {
   'mode': 'education',
@@ -12,6 +13,10 @@ Map<String, dynamic> _label = {
 };
 
 Future<void> loadLabelMap() async {
+  var statusStorage = await Permission.storage.status;
+  if (!statusStorage.isGranted) {
+    await Permission.storage.request();
+  }
   _label = await loadMapFromFile();
 }
 
@@ -123,7 +128,7 @@ class MyHomePageState extends State<MyHomePage> {
     ]
   };
 
-  List<dynamic> messsages = [
+  List<dynamic> _messages = [
     {
       "role": "system",
       "content": "You are a very helpful personal assistant and world class educator (like prof. Richard Feynman and his sense for humor), "
@@ -132,7 +137,7 @@ class MyHomePageState extends State<MyHomePage> {
           "starting with numbers like 1., a., i. when necessary. You are able to summarize "
           "long texts."
     }
-  ]; // Stores the conversation messages
+  ]; // Stores the conversation _messages
 
   Future<void> loadLabelMap() async {
     _label = await loadMapFromFile();
@@ -148,28 +153,27 @@ class MyHomePageState extends State<MyHomePage> {
   Future<void> _sendQuery() async {
     setState(() {
       _isLoading = true; // Sets the loading state
-      messsages.add({
-        "role": "user",
-        "content": _query
-      }); // Adds the user's query to the conversation
+      // _messages.add({
+      //   "role": "user",
+      //   "content": _query
+      // }); // Adds the user's query to the conversation
     });
 
+    _messages.add({"role": "user", "content": _query});
+
     final reply = await sendQuery(
-        messsages,
+        _messages,
         _label['model'],
         _label[
             'creativity']); // Calls the sendQuery function from openai_call.dart
 
     setState(() {
       _reply = reply; // Updates the AI assistant's response
-      messsages.add({
-        "role": "assistant",
-        "content": reply
-      }); // Adds the assistant's response to the conversation
+      // Adds the assistant's response to the conversation
       _isLoading = false; // Resets the loading state
-      // _queryController.clear();
-      // _queryController.text = '';
     });
+
+    _messages.add({"role": "assistant", "content": reply});
   }
 
   Future<void> _recordAudio(String filePath) async {
@@ -180,8 +184,8 @@ class MyHomePageState extends State<MyHomePage> {
     setState(() {
       _queryController.text = transcribedText;
       _query = transcribedText;
-      _sendQuery();
     });
+    _sendQuery();
   }
 
   Future<void> _voiceRecorerScreen() async {
@@ -278,7 +282,7 @@ class MyHomePageState extends State<MyHomePage> {
                   ),
             ElevatedButton(
               onPressed: () {
-                messsages = _initialPrompts['education'];
+                _messages = _initialPrompts[_label['mode']];
               },
               child: const Text('New query'),
             ),
@@ -318,6 +322,7 @@ class MyHomePageState extends State<MyHomePage> {
                   children: <Widget>[
                     if (index == 0) // education
                       Wrap(
+                        direction: Axis.vertical,
                         children: <ChoiceChip>[
                           for (var mode in _modes)
                             ChoiceChip(
@@ -328,7 +333,7 @@ class MyHomePageState extends State<MyHomePage> {
                                   _label['mode'] = mode;
                                 });
                                 saveMapToFile(_label);
-                                messsages = _initialPrompts[mode];
+                                _messages = _initialPrompts[_label['mode']];
                                 Navigator.pop(context);
                               },
                             ),
@@ -349,6 +354,7 @@ class MyHomePageState extends State<MyHomePage> {
                       ),
                     if (index == 2) // gpt-model
                       Wrap(
+                        direction: Axis.vertical,
                         children: <ChoiceChip>[
                           for (var model in _models)
                             ChoiceChip(
